@@ -1,0 +1,36 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.centered-div {
+    text-align: center;
+}
+
+.upload-section, .slider-section {
+    margin-bottom: 10px;
+}
+
+input[type="file"], input[type="range"] {
+    margin-top: 10px;
+}
+
+#scaleValue {
+    display: inline-block;
+    width: 50px;
+    text-align: center;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.button-container button {
+    flex-basis: 48%;
+}

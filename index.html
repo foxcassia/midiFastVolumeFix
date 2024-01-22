@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>    
+    <div class="centered-div">
+        <div class="upload-section">
+            <label for="fileUpload">Midi:</label>
+            <input type="file" id="fileUpload">
+        </div>
+
+        <div class="slider-section">
+            <label for="scale">Velocity/Volume:</label>
+            <input type="range" id="scale" min="5" max="200" value="100">
+            <span id="scaleValue">100</span>
+        </div>
+
+        <div class="button-container">
+            <button id="processButton">Process</button>
+            <button id="downloadButton" style="display: none;">Download</button>
+        </div>
+    </div>
+
+    <script src="bundle.js"></script>
+</body>
+</html>
