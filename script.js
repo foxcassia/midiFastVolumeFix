@@ -43,7 +43,7 @@ document.getElementById("scaleVelocityPercent").oninput = function() {
     document.getElementById("scaleVelocityPercentValue").innerHTML = this.value + '%';
 }
 
-document.getElementById("processButton").onclick = function() {
+document.getElementById("processButtonVelocityPercent").onclick = function() {
     const selectedIncrease = parseInt(document.getElementById("scaleVelocityPercent").value);
     const percentIncrease = selectedIncrease/100
     
@@ -78,7 +78,7 @@ document.getElementById("processButton").onclick = function() {
             console.log("Parsed MIDI data:", parsedMidi);
             changeVelocityInMidi(parsedMidi.tracks, percentIncrease);
             processedData = Buffer.from(writeMidi(parsedMidi));
-            document.getElementById("downloadButton").style.display = 'block';
+            document.getElementById("downloadButtonVelocityPercent").style.display = 'block';
         } catch (error) {
             console.error("Error:", error);
         }
