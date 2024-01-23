@@ -2772,12 +2772,12 @@ document.getElementById("downloadButton").onclick = function() {
     downloadFile(processedData, processedDataFileName, fileType);
 };
 
-document.getElementById("scale").oninput = function() {
-    document.getElementById("scaleValue").innerHTML = this.value + '%';
+document.getElementById("scaleVelocityPercent").oninput = function() {
+    document.getElementById("scaleVelocityPercentValue").innerHTML = this.value + '%';
 }
 
 document.getElementById("processButton").onclick = function() {
-    const selectedIncrease = parseInt(document.getElementById("scale").value);
+    const selectedIncrease = parseInt(document.getElementById("scaleVelocityPercent").value);
     const percentIncrease = selectedIncrease/100
     
     console.log(`Increasing by ${selectedIncrease}%`);
@@ -2807,11 +2807,10 @@ document.getElementById("processButton").onclick = function() {
         const arrayBuffer = event.target.result;
         const uint8Array = new Uint8Array(arrayBuffer);
         try {
-            var parsedMidi = parseMidi(uint8Array);
+            const parsedMidi = parseMidi(uint8Array);
             console.log("Parsed MIDI data:", parsedMidi);
             changeVelocityInMidi(parsedMidi.tracks, percentIncrease);
-            const outputMidi = Buffer.from(writeMidi(parsedMidi));
-            processedData = outputMidi;
+            processedData = Buffer.from(writeMidi(parsedMidi));
             document.getElementById("downloadButton").style.display = 'block';
         } catch (error) {
             console.error("Error:", error);

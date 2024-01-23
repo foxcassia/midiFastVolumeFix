@@ -39,12 +39,12 @@ document.getElementById("downloadButton").onclick = function() {
     downloadFile(processedData, processedDataFileName, fileType);
 };
 
-document.getElementById("scale").oninput = function() {
-    document.getElementById("scaleValue").innerHTML = this.value + '%';
+document.getElementById("scaleVelocityPercent").oninput = function() {
+    document.getElementById("scaleVelocityPercentValue").innerHTML = this.value + '%';
 }
 
 document.getElementById("processButton").onclick = function() {
-    const selectedIncrease = parseInt(document.getElementById("scale").value);
+    const selectedIncrease = parseInt(document.getElementById("scaleVelocityPercent").value);
     const percentIncrease = selectedIncrease/100
     
     console.log(`Increasing by ${selectedIncrease}%`);
