@@ -12,8 +12,9 @@
 
         <hr></hr>
 
+        <!-- Percentile based volume increase -->
+        <p><b>Percentile volume change:</b></p>
         <div class="slider-section">
-            <p><b>Percentile volume change:</b></p>
             <label for="scaleVelocityPercent">Velocity/Volume:</label>
             <input type="range" id="scaleVelocityPercent" min="5" max="200" value="100">
             <span id="scaleVelocityPercentValue">100</span>
@@ -25,6 +26,24 @@
         </div>
 
         <hr></hr>
+        
+        <p><b>Normalize midi:</b></p>
+        <div class="slider-section">
+            <label for="scaleNormalizeMidiMinimum">Minimum Note Volume/Velocity:</label>
+            <input type="range" id="scaleNormalizeMidiMinimum" min="1" max="126" value="50">
+            <span id="scaleNormalizeMidiMinimumValue">50</span>
+        </div>
+
+        <div class="slider-section">
+            <label for="scaleNormalizeMidiMaximum">Maximum Note Volume/Velocity:</label>
+            <input type="range" id="scaleNormalizeMidiMaximum" min="1" max="127" value="80">
+            <span id="scaleNormalizeMidiMaximumValue">80</span>
+        </div>
+
+        <div class="button-container">
+            <button id="processButtonNormalizeMidi">Process</button>
+            <button id="downloadButtonNormalizeMidi" style="display: none;">Download</button>
+        </div>
     </div>
 
     <script src="bundle.js"></script>
