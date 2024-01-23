@@ -8,6 +8,10 @@ body {
     flex-direction: column;
 }
 
+hr {
+    margin: 20px;
+}
+
 .centered-div {
     text-align: center;
 }
