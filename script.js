@@ -1,11 +1,12 @@
 const {parseMidi, writeMidi} = require('midi-file');  
 const JSZip = require('jszip');
+
 const VELOCITY_LIMIT = 127;
 
 let processedData = undefined;
 let processedDataFileName = '';
 let fileType = 'audio/midi';
-let zipType = '';
+let zipType = 'application/zip';
 
 function changeVelocityInMidi(midiTracksArray, percentIncrease){
     for(const track of midiTracksArray){
@@ -76,27 +77,43 @@ function normalizeMidi(midiTracksArray, newMin, newMax){
 }
 
 function unzipMidiRepo(file){
-    const files = [];
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        const zip = new JSZip();
-        zip.loadAsync(event.target.result)
-           .then(zip => {
-               // Handle the unzipped content here
-               // For example, list the filenames:
-               zip.forEach((relativePath, file) => {
-                    console.log("File:", relativePath);
-                    if (file.size > 0) {
-                        file.push(file);
-                    }
-               });
-           })
-           .catch(err => {
-               console.error("Error reading zip file:", err);
-           });
-    };
-    reader.readAsArrayBuffer(file);
-    return files;
+    return new Promise((resolve, reject) => {
+        if (!file) {
+            reject(new Error("No file provided"));
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const zip = new JSZip();
+            zip.loadAsync(event.target.result)
+                .then(zip => {
+                    const filePromises = Object.keys(zip.files).map(filename => {
+                        return zip.files[filename].async('blob').then(blob => {
+                            // could put processing here but meh
+                            return new File([blob], filename, { type: blob.type });
+                        });
+                    });
+
+                    return Promise.all(filePromises);
+                })
+                .then(files => resolve(files))
+                .catch(err => reject(err));
+        };
+
+        reader.onerror = () => reject(new Error("Error reading file"));
+
+        reader.readAsArrayBuffer(file);
+    });
+}
+
+async function zipFiles(files) {
+    const zip = new JSZip();
+    for( let i = 0; i < files.length; i ++) {
+        zip.file(files[i][0], files[i][1]);
+    }
+
+    return await zip.generateAsync({ type: "nodebuffer" });
 }
 
 document.getElementById("downloadButtonVelocityPercent").onclick = function() {
@@ -106,7 +123,9 @@ document.getElementById("downloadButtonNormalizeMidi").onclick = function() {
     downloadFile(processedData, processedDataFileName, fileType);
 };
 document.getElementById("downloadButtonNormalizeMidiRepo").onclick = function() {
-    downloadFile(processedData, processedDataFileName, fileType);
+    zipFiles(processedData).then((r)=>{
+        downloadFile(r, processedDataFileName, zipType);
+    })
 };
 document.getElementById("scaleVelocityPercent").oninput = function() {
     document.getElementById("scaleVelocityPercentValue").innerHTML = this.value + '%';
@@ -128,7 +147,6 @@ document.getElementById("processButtonVelocityPercent").onclick = function() {
     const selectedIncrease = parseInt(document.getElementById("scaleVelocityPercent").value);
     const percentIncrease = selectedIncrease/100
     const file = handleUpload();   
-    
     console.log(`Increasing by ${selectedIncrease}%`);
 
     if(percentIncrease === 100){
@@ -194,31 +212,38 @@ document.getElementById("processButtonNormalizeMidi").onclick = function() {
 document.getElementById("processButtonNormalizeMidiRepo").onclick = function() {
     const minVol = parseInt(document.getElementById("scaleNormalizeMidiMinimumRepo").value);
     const maxVol = parseInt(document.getElementById("scaleNormalizeMidiMaximumRepo").value);
-    const file = handleUpload();
+    processedDataFileName = 'ProcessedMidis'
+    handleUpload().then((files)=>{
+        const processedDataArray = [];
     
-    if(minVol > maxVol){
-        console.log('Nope');
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = function(event) {
-        const arrayBuffer = event.target.result;
-        const uint8Array = new Uint8Array(arrayBuffer);
-        try {
-            const parsedMidi = parseMidi(uint8Array);
-            normalizeMidi(parsedMidi.tracks, minVol, maxVol);
-            processedData = Buffer.from(writeMidi(parsedMidi));
-            document.getElementById("downloadButtonNormalizeMidiRepo").style.display = 'block';
-        } catch (error) {
-            console.error("Error:", error);
+        if(minVol > maxVol){
+            console.log('Nope');
+            return;
         }
-    };
-    
-    reader.onerror = function(event) {
-        console.error("FileReader error:", event.target.error);
-    };
 
-    reader.readAsArrayBuffer(file);
+        for(const file of files){
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                const arrayBuffer = event.target.result;
+                const uint8Array = new Uint8Array(arrayBuffer);
+                try {
+                    const parsedMidi = parseMidi(uint8Array);
+                    normalizeMidi(parsedMidi.tracks, minVol, maxVol);
+                    const processed = Buffer.from(writeMidi(parsedMidi))
+                    processedDataArray.push([file.name, processed]);
+                } catch (error) {
+                    console.error("Error:", error);
+                }
+            };
+            
+            reader.onerror = function(event) {
+                console.error("FileReader error:", event.target.error);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        processedData = processedDataArray;
+        document.getElementById("downloadButtonNormalizeMidiRepo").style.display = 'block';
+    });
 };
