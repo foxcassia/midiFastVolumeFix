@@ -44,6 +44,26 @@
             <button id="processButtonNormalizeMidi">Process</button>
             <button id="downloadButtonNormalizeMidi" style="display: none;">Download</button>
         </div>
+
+        <hr></hr>
+        
+        <p><b>Normalize midis in zip:</b></p>
+        <div class="slider-section">
+            <label for="scaleNormalizeMidiMinimumRepo">Minimum Note Volume/Velocity:</label>
+            <input type="range" id="scaleNormalizeMidiMinimumRepo" min="1" max="126" value="50">
+            <span id="scaleNormalizeMidiMinimumValueRepo">50</span>
+        </div>
+
+        <div class="slider-section">
+            <label for="scaleNormalizeMidiMaximumRepo">Maximum Note Volume/Velocity:</label>
+            <input type="range" id="scaleNormalizeMidiMaximumRepo" min="1" max="127" value="80">
+            <span id="scaleNormalizeMidiMaximumValueRepo">80</span>
+        </div>
+
+        <div class="button-container">
+            <button id="processButtonNormalizeMidiRepo">Process</button>
+            <button id="downloadButtonNormalizeMidiRepo" style="display: none;">Download</button>
+        </div>
     </div>
 
     <script src="bundle.js"></script>
