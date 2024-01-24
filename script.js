@@ -1,4 +1,5 @@
 const {parseMidi, writeMidi} = require('midi-file');  
+const JSZip = require('jszip');
 const VELOCITY_LIMIT = 127;
 
 let processedData = undefined;
@@ -6,10 +7,36 @@ let processedDataFileName = '';
 let fileType = 'audio/midi';
 let zipType = '';
 
+function unzip(file){
+    const files = [];
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const zip = new JSZip();
+        zip.loadAsync(event.target.result)
+           .then(zip => {
+               // Handle the unzipped content here
+               // For example, list the filenames:
+               zip.forEach((relativePath, file) => {
+                   console.log("File:", relativePath);
+                   file.push(file);
+               });
+           })
+           .catch(err => {
+               console.error("Error reading zip file:", err);
+           });
+    };
+    reader.readAsArrayBuffer(file);
+    return files;
+}
+
 function handleUpload(){
     const file = document.getElementById("fileUpload").files[0];
     console.log("File uploaded: ", file.name);
     console.log("file type: ", file.type);
+
+    if(file.type === 'application/x-zip-compressed' || file.type === 'application/zip'){
+
+    }
 
     if (!file) {
         console.log("No file");

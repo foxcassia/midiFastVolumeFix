@@ -2,6 +2,7 @@
   "name": "midi-parser",
   "version": "0.0.1",
   "dependencies": {
+    "jszip": "^3.10.1",
     "midi-file": "^1.2.4"
   },
   "scripts": {

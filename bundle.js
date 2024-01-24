@@ -2737,6 +2737,27 @@ const VELOCITY_LIMIT = 127;
 let processedData = undefined;
 let processedDataFileName = '';
 let fileType = 'audio/midi';
+let zipType = '';
+
+function handleUpload(){
+    const file = document.getElementById("fileUpload").files[0];
+    console.log("File uploaded: ", file.name);
+    console.log("file type: ", file.type);
+
+    if (!file) {
+        console.log("No file");
+        return;
+    }
+
+    if (file.size === 0) {
+        console.error("Bad file?");
+        return;
+    }
+
+    processedDataFileName = `Edit ${file.name}`;
+
+    return file;
+}
 
 function downloadFile(data, filename, type) {
     console.log('Downloading ', filename)
@@ -2798,26 +2819,14 @@ document.getElementById("scaleNormalizeMidiMinimum").oninput = function() {
     document.getElementById("scaleNormalizeMidiMinimumValue").innerHTML = this.value;
 }
 
+
 document.getElementById("processButtonNormalizeMidi").onclick = function() {
     const minVol = parseInt(document.getElementById("scaleNormalizeMidiMinimum").value);
     const maxVol = parseInt(document.getElementById("scaleNormalizeMidiMaximum").value);
-    const file = document.getElementById("fileUpload").files[0];
-
+    const file = handleUpload();
+    
     if(minVol > maxVol){
         console.log('Nope');
-        return;
-    }
-
-    if (!file) {
-        console.log("No file");
-        return;
-    }
-
-    console.log("File uploaded:", file.name);
-    processedDataFileName = `Edit ${file.name}`;
-
-    if (file.size === 0) {
-        console.error("Bad file?");
         return;
     }
 
@@ -2846,24 +2855,12 @@ document.getElementById("processButtonNormalizeMidi").onclick = function() {
 document.getElementById("processButtonVelocityPercent").onclick = function() {
     const selectedIncrease = parseInt(document.getElementById("scaleVelocityPercent").value);
     const percentIncrease = selectedIncrease/100
-    const file = document.getElementById("fileUpload").files[0];    
+    const file = handleUpload();   
+    
     console.log(`Increasing by ${selectedIncrease}%`);
 
     if(percentIncrease === 100){
         console.log('Why bother?');
-        return;
-    }
-
-    if (!file) {
-        console.log("No file");
-        return;
-    }
-
-    console.log("File uploaded:", file.name);
-    processedDataFileName = `Edit ${file.name}`;
-
-    if (file.size === 0) {
-        console.error("Bad file?");
         return;
     }
 
