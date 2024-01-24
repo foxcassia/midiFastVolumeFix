@@ -105,6 +105,9 @@ document.getElementById("downloadButtonVelocityPercent").onclick = function() {
 document.getElementById("downloadButtonNormalizeMidi").onclick = function() {
     downloadFile(processedData, processedDataFileName, fileType);
 };
+document.getElementById("downloadButtonNormalizeMidiRepo").onclick = function() {
+    downloadFile(processedData, processedDataFileName, fileType);
+};
 document.getElementById("scaleVelocityPercent").oninput = function() {
     document.getElementById("scaleVelocityPercentValue").innerHTML = this.value + '%';
 }
@@ -113,6 +116,12 @@ document.getElementById("scaleNormalizeMidiMaximum").oninput = function() {
 }
 document.getElementById("scaleNormalizeMidiMinimum").oninput = function() {
     document.getElementById("scaleNormalizeMidiMinimumValue").innerHTML = this.value;
+}
+document.getElementById("scaleNormalizeMidiMaximumRepo").oninput = function() {
+    document.getElementById("scaleNormalizeMidiMaximumValueRepo").innerHTML = this.value;
+}
+document.getElementById("scaleNormalizeMidiMinimumRepo").oninput = function() {
+    document.getElementById("scaleNormalizeMidiMinimumValueRepo").innerHTML = this.value;
 }
 
 document.getElementById("processButtonVelocityPercent").onclick = function() {
@@ -182,3 +191,34 @@ document.getElementById("processButtonNormalizeMidi").onclick = function() {
     reader.readAsArrayBuffer(file);
 };
 
+document.getElementById("processButtonNormalizeMidiRepo").onclick = function() {
+    const minVol = parseInt(document.getElementById("scaleNormalizeMidiMinimumRepo").value);
+    const maxVol = parseInt(document.getElementById("scaleNormalizeMidiMaximumRepo").value);
+    const file = handleUpload();
+    
+    if(minVol > maxVol){
+        console.log('Nope');
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+        const arrayBuffer = event.target.result;
+        const uint8Array = new Uint8Array(arrayBuffer);
+        try {
+            const parsedMidi = parseMidi(uint8Array);
+            normalizeMidi(parsedMidi.tracks, minVol, maxVol);
+            processedData = Buffer.from(writeMidi(parsedMidi));
+            document.getElementById("downloadButtonNormalizeMidiRepo").style.display = 'block';
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+    
+    reader.onerror = function(event) {
+        console.error("FileReader error:", event.target.error);
+    };
+
+    reader.readAsArrayBuffer(file);
+};
